@@ -174,7 +174,8 @@ class Game:
             #Menu de navigation du Domaine des Souflis
             choice = Prompt.ask("Choices :\n1 - Interact with the curent zone\n2 - Open the inventory\n3 - Go to the south-west (Domaine des Souflis)\n", choices=["1","2","3"])
             match choice:
-                case "1": # Lancement du donjon
+                #Lancement du donjon
+                case "1": 
                     naration = [
                         ("-", "Vous franchissez les portes massives du Domaine des Souflis. Le lieu est à la fois majestueux et intimidant, avec des sculptures imposantes et des fresques murales racontant des légendes anciennes. Au centre, une immense salle trône sous un ciel artificiel éclairé par des cristaux lumineux. Vous ressentez une étrange tension dans l'air, comme si chaque pierre murmurait des avertissements."),
                         ("Loic", f"Nous sommes arrivés, {self.main_player.name}. Voici le Domaine des Souflis. Mais restez sur vos gardes… Nous ne sommes pas seuls."),
@@ -213,17 +214,21 @@ class Game:
                     
                     #Retour devant le Domaine des Souflis 
                     self.places["Souflis Forest"].interact()
+                #Ouverture de l'inventaire
                 case "2":
                     place.interact()
+                #Retour à la zone Farm
                 case "3":
                     self.main_player.move(self.places("Souflis Forest"))
                 case _:
                     pass
-
+        #Le joueur arrive au Casino du quartier des plaisirs
         def le_casino_du_cartier_des_plaisirs_interaction(place):
+            #Menu de navigation du Casino
             choice = Prompt.ask("Choices :\n1 - Interact with the curent zone\n2 - Open the inventory\n3 - Go to the North (La Foret des Souflis)\n", choices=["1","2","3"])
             match choice:
-                case "1": # Lancement d'un combat + re envoi de l'interface a la fin du combat'
+                #Lancement de la première étape pour rentrer dans le casino
+                case "1":
                     naration = [
                         ("-", "Après avoir traversé la jungle dense et sauvage, vous découvrez enfin une clairière dissimulée par une végétation luxuriante. Une lumière vacillante brille à travers les feuillages : c'est l'entrée du mystérieux Casino Zoologique. Une arche massive faite de lianes et de bois sculpté marque le passage vers ce lieu de vice et de hasard."),
                         ('-', "Deux imposants gorilles en costards, bras croisés, montent la garde devant une porte dorée ornée de pierres précieuses. Leur allure imposante et leur regard perçant suffisent à dissuader quiconque de s'approcher imprudemment."),
@@ -238,18 +243,23 @@ class Game:
                     dialog.dialog(naration)
 
                     number = 0
-
+                    #Le joueur lance un dé à 12 faces, il accède au combat de boss seulement s'il fait 12.
                     while number != 12:
+                        #Menu de navigation
                         choice = Prompt.ask("Choisissez une action :\n1 - Lancer un dé\n2 - Abandonner", choices=["1","2"])
+                        #Le joueur de lancer le dé
                         if choice == 1:
                             number = random.randint(0, 12)
                             dialog.talk("-", f"Vous lancez un dé et tombez sur le numéro {number}")
+                            #Si le joueur tombe sur autre chose que 12, la boucle recommence
                             if number != 12:
                                 dialog.talk("Garde Gorille 1", "Hahaha, tu as raté ! Ré essaie si tu l'ose...")
-                        else: # Choice == 2
+                        #Le joueur décide d'abandonner et revenir devant le casino
+                        else:
                             dialog.talk("Garde Gorille 1", "Pff, comme prévu. Aucun humain ne peut rivaliser avec la jungle. Rentre chez toi, gamin.")
                             return self.places["Le casino du cartier des plaisirs"].interact()
-
+                    
+                    #Le joueur à finalement réussi à faire un 12
                     naration = [
                         ("Garde Gorille 1 (étonné)", "Quoi ?! Tu as obtenu un 12 ? Eh bien, il semble que tu sois béni par la chance aujourd'hui."),
                         ("Garde Gorille 2", "Bonne chance avec le Roi. Il n'est pas aussi gentil que nous… Hé hé."),
@@ -261,23 +271,28 @@ class Game:
                     ]
 
                     dialog.dialog(naration)
-
+                    #Lancement du combat contre Le Roi Singe Anjara
                     combat = Combat(self.main_player, Monster(**self.monsters["Le Roi Singe"]))
                     combat.start()
-
+                    #Si le combat est gagné le joueur drop l'artéfact (Jeu de cartes (effet à déterminer))
                     self.main_player.inventory.append(self.artefact["Jeu de cartes"])
+                    #Retourne devant le casino
                     self.places["Le casino du cartier des plaisirs"].interact()
+                #Ouverture de l'inventaire    
                 case "2":
                     place.interact()
+                #Retour à la zone de farm
                 case "3":
                     self.main_player.move(self.places["Souflis Forest"])
                 case _:
                     pass
-
+        #Le joueur arrive devantle Temple des 1000 moines
         def le_temple_des_1000_moines_interaction(place):
+            #Menu de navigation du Temple
             choice = Prompt.ask("Choices :\n1 - Interact with the curent zone\n2 - Open the inventory\n3 - Go to the North (La Foret des Souflis)\n", choices=["1","2","3"])
             match choice:
-                case "1": # Lancement d'un combat + re envoi de l'interface a la fin du combat'
+                #Lancement de la première étape du donjon
+                case "1":
                     naration = [
                         ("-", "Vous arrivez au pied de la montagne qui abrite le légendaire Temple des 1000 Moines. Une double porte imposante en bois rouge écarlate se dresse devant vous, marquant l'entrée de ce sanctuaire ancien. Alors que vous vous approchez, les portes s'ouvrent lentement dans un grincement solennel. Une silhouette élancée se détache dans l'ombre du seuil."),
                         ('Leo', "Mes respects, jeune héros. Je suis Leo, humble serviteur de ce temple sacré. Bienvenue au sanctuaire du Temple des 1000 Moines."),
@@ -285,8 +300,9 @@ class Game:
                         ("Leo (serrant fortement un baton légèrement)", "…je dois m'assurer que vous êtes digne de rencontrer mon maître. Préparez-vous, jeune scarabée, car seul un esprit affûté peut franchir cette porte !"),
                     ]
                     dialog.dialog(naration)
-                    # COMBAT CONTRE LEO
+                    #Lancement du Jeu du baton (Fort Boyard) contre Léo
 
+                    #Le joueur a gagné le jeu du baton 
                     naration = [
                         ("-", "Vous gravissez péniblement l'escalier interminable. À chaque marche, la végétation luxuriante de la forêt des Souflis s'éloigne, offrant une vue à couper le souffle sur le paysage environnant. Enfin, au sommet, le temple se dévoile, majestueux. Les trois pavillons principaux scintillent sous le soleil, leurs toits dorés étincelant comme des joyaux. Les murs extérieurs racontent, à travers des fresques, l'histoire des 1000 moines qui atteignirent l'illumination en ces lieux.\nAlors que vous avancez, une voix grave et profonde résonne dans le vent, semblant provenir de toutes les directions à la fois."),
                         ("-", "Vous entendez une voix omniprésente. \"Vous avez donc réussi le défi de mon disciple… Suivez ma voix, héros, et venez à ma rencontre.\""),
@@ -296,10 +312,19 @@ class Game:
                         ("Maître Lao ren", "Mais avant d'accepter de vous remettre la relique sacrée, il est de mon devoir de tester votre force et votre volonté. Ne perdons pas de temps... Affrontez-moi !")
                     ]
                     dialog.dialog(naration)
+
+                    #Lancement du combat contre le Boss du donjon Lao-Ren
                     combat = Combat(self.main_player, Monster(**self.monsters["Lao-ren"]))
+
+                    #SI le combat est gagné, le joueur drop l'artéfact (Maxi Phô Boeuf +10 damage )
+                    self.main_player.inventory.append(self.artefact["Maxi Phô Boeuf"])
+                    
+                    #Retour devant le temple
                     self.places["Souflis Forest"].interact()
+                #Ouverture de l'inventaire
                 case "2":    
                     place.interact()
+                #Retour à la zone de farm
                 case "3":
                     self.main_player.move(self.places["Souflis Forest"])
                 case _:
@@ -350,7 +375,7 @@ class Game:
             "Le temple des 1 000 moines": temple,
             "Hetic": hetic,
         }
-
+        # Stockage des attaques 
         self.attacks = {
             "Bois de boulogne": {"name": "Bois de boulogne", "description": "", "battle_cry": "", "durability": 100, "damage": 65},
             "Course rapide": {"name": "Course rapide", "description": "", "battle_cry": "", "durability": 100, "damage": 60},
@@ -390,6 +415,8 @@ class Game:
             "Sillage d'Encens": {"name": "Sillage d'Encens", "description": "Une série de mouvements fluides libérant une fumée toxique qui entrave les adversaires.", "battle_cry": "", "durability": 100, "damage": 100},
             "Colère des 1000 Âmes": {"name": "Colère des 1000 Âmes", "description": "Le boss invoque les esprits des moines qui l'entourent pour déchaîner une tempête spirituelle dévastatrice.", "battle_cry": "", "durability": 1, "damage": 100},
         }
+
+        # Stockage des objets
         self.items = {
             "Clé du casino": {"name": "Clé du casino", "description": "Cette clé t'aidera à accéder au boss final !", "effect": {}},
             "Clé de la fête foraine": {"name": "Clé de la fête foraine", "description": "Cette clé t'aidera à accéder au boss final !", "effect": {}},
@@ -398,12 +425,14 @@ class Game:
             "Petite potion rouge": {"name": "Petite potion rouge", "description": "Potion donnée par la déesse Gaïa (soigne)", "effect": {"hp": 5}, "durability": 1}
         }
 
+        # Stockage des artéfacts
         self.artefact = {
             "Écran du Mac": {"name": "Écran du Mac", "description": "Utilisé comme bouclier, c'est le fameux écran du Mac de Mathieu", "effect": {"defense": 10}},
             "Maxi Phô Boeuf": {"name": "Maxi Phô Boeuf", "description": "", "effect": {"damage": 10}},
             "Jeu de cartes": {"name": "Jeu de cartes", "description": "", "effect": {}}
         }
 
+        # Stockage des monstres
         self.monsters = {
             "Amelie": {
                 "name": "Amelie",
@@ -571,7 +600,7 @@ class Game:
 
 
 
-
+    #Commencement du jeu
     def start(self):
         console.print("[green]Création du personnage...[/green]")
         player_name = Prompt.ask("Quel nom souhaitez-vous donner à votre personnage ?")
@@ -587,7 +616,7 @@ class Game:
         console.print(f"[bold blue]Bienvenue dans {self.name}[/bold blue]")
         self.main_player.place.interact()
 
-
+# Class regroupant toutes les entités du jeu
 class Entity:
     def __init__(self, name: str, description: str, level: int, xp: float, stats: dict, attack_list: list) :
         self.name = name
@@ -598,41 +627,62 @@ class Entity:
         self.max_hp = self.stat["health"]
         self.attack_list = attack_list or []
 
+    #Méthode d'attaque générale
     def attack(self, target) -> None:
+        
+        #Vérifie si l'entité possède au moins 1 attaque dans sa liste d'attaque
         if not self.attack_list:
             console.print(f"{self.name} n'a aucune attaque disponible")
         
         attack_chosen = None
-        if type(target) is  Player:
+        
+        #Si l'entité est un monstre, choisit ses attaques au hasard
+        if type(target) is  Monster:
             attack_chosen = random.choice(self.attack_list)
-        elif type(target) is Monster :
+        
+        #Si l'entité est le joueur, affiche sa liste d'attaques et a la possibilité de choisir
+        elif type(target) is Player :
             print(self.attack_list)
             choices = "\n".join([f"{i} - {attack.name}" for i, attack in enumerate(self.attack_list)])
             attack_chosen = self.attack_list[int(Prompt.ask(f"Choisissez votre attaque :\n{choices}\n", choices=[str(i) for i in range(len(self.attack_list))]))]
-            
+        
+        #Variable qui calcule les dommages finaux occasionnés en fonction de l'attaque de l'attaquant et la défense de l'opposant
         damage = max(attack_chosen.damage + self.stat["attack"] - self.stat["defense"], 0)
         console.print(f"{self.name} attaque {target.name} avec {attack_chosen.name} et inflige {damage}.")
         target.change_stats(-damage, "health")
 
+    #Méthode d'affectation des modifications des stats (dommages reçus/changement de stats)
     def change_stats(self, amount: int, damage_type: str) -> None:
 
+        #Modifie le montant de vie de l'entité
         if damage_type == "health" :
             self.stat["health"] += amount
             self.stat["health"] = max(self.stat["health"], 0)
 
+            #damage_type peut être négatif (donc peut être des dommages occasionnés par un attaque)
             console.print(f"La santé de {self.name} {"augmente" if amount > 0 else "descend"} de {amount}. Santé : {self.stat['health']}")
+
+            #Si la stats health de l'entité = 0
             if self.stat["health"] <= 0:
                 console.print(f"{self.name} est vaincu")
+
+        #Modifie le montant de la stat attack de l'entité
         elif damage_type == "attack" :
             self.stat["attack"] += amount
             self.stat["attack"] = max(self.stat["attack"], 0)
+
+            #damage_type peut être négatif (donc peut retirer de l'attaque à l'entité)
             console.print(f"L'attaque de {self.name} {"augmente" if amount > 0 else "descend"} de {amount}. Attaque : {self.stat['attack']}")
+
+        #Modifie le montant de défense de l'entité
         elif damage_type == "defense" :
             self.stat["defense"] += amount
             self.stat["defense"] = max(self.stat["defense"], 0)
+
+            #damage_type peut être négatif (donc peut retirer de la defénse à l'entité)
             console.print(f"La défense de {self.name} {"augmente" if amount > 0 else "descend"} de {amount}. Défense : {self.stat['defense']}")
 
-
+#Définition d'un monstre
 class Monster(Entity):
     def __init__(self, name: str, description: str, level: int, attack_list: list, dropable_items: list, boss:bool = True):
         stats = {
@@ -649,6 +699,7 @@ class Monster(Entity):
 
         self.dropable_items = dropable_items
 
+    #Calculateur de chances que le monstre lâche un ou plusieurs objet à la fin d'un combat                                                    
     def calculate_drops(self):
         dropped_items = []
         for item in self.dropable_items:
@@ -658,7 +709,7 @@ class Monster(Entity):
         return dropped_items
 
 
-
+#Définition d'un joueur
 class Player(Entity):
     def __init__(self, name: str, level: int, xp: float, stats: dict, attack_list: list, place ):
         stats = {
@@ -670,7 +721,10 @@ class Player(Entity):
         self.inventory = []
         self.place = place
 
+    #Méthode d'ouverture de l'inventaire
     def show_inventory(self):
+
+        #Vérifie si le joueur possède au moins 1 objet dans l'inventaire
         if len(self.inventory) <= 0:
             return console.print(f"\L'inventaire de {self.name} est vide")
         else : 
@@ -681,18 +735,24 @@ class Player(Entity):
                 console.print(item_details)
                 console.print(f"Nombre d'item : {len(self.inventory)}")
 
+    #Méthode d'utilisation d'un objet
     def use_item(self, item_index):
         for index, item in enumerate(self.inventory):
             if index == item_index:
+
+                #Vérifie si l'objet possède une méthode "use"
                 if hasattr(item, "use"):
                     console.print(f"{self.name} utilise {item.name}")
                     item.use(self)
+
+                    #L'objet est supprimé après utilisation
                     self.inventory.pop(item_index)
                 else:
                     console.print(f"(Vous ne pouvez pas utiliser {item.name} sur vous)")
                 return
         console.print(f"{item.name} n'est pas dans votre inventaire")
-
+    
+    #Méthode d'ajout d'xp au joueur
     def add_xp(self, amount : float):
         self.xp += amount
         while self.xp >= self.level_up_threshold():
